@@ -9,5 +9,4 @@ public class FinalProjectWapApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FinalProjectWapApplication.class, args);
 	}
-
 }
