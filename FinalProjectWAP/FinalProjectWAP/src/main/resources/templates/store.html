@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Store</title>
+    <link rel="stylesheet" th:href="@{/store.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a th:href="@{/store}" class="nav-link">Store</a>
+            <a th:href="@{/basket}" class="nav-link">Basket</a>
+            <a th:href="@{/profile}" class="nav-link">Profile</a>
+        </div>
+    </nav>
+
+    <div class="store-container">
+        <h1>Available Books</h1>
+        <div class="book-grid">
+            <div class="book-card" th:each="book : ${books}">
+                <h2 th:text="${book.title}">Book Title</h2>
+                <p th:text="${book.author}">Author Name</p>
+                <p th:text="${book.price}">Price</p>
+                <form th:action="@{/basket/add}" method="post">
+                    <input type="hidden" th:value="${book.id}" name="bookId">
+                    <button type="submit">Add to Basket</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
