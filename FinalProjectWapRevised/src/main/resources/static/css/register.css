@@ -8,6 +8,8 @@ body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         .register-container {
+            position: relative;
+            margin-bottom: 20px;
             background: white;
             padding: 36px;
             border-radius: 8px;
@@ -22,6 +24,7 @@ body {
         }
         .form-group {
             margin-bottom: 16px;
+            position: relative;
         }
         label {
             display: block;
@@ -57,4 +60,39 @@ body {
             font-size: 14px; 
             text-align: center;
             margin-top: 12px; 
+        }
+
+        .error-bubble {
+            position: absolute;
+            bottom: 100%;
+            right: -80px;
+            left: 351.95px;
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 10;
+            text-align: center;
+            width: max-content;
+
+            animation: popUp 0.3s ease-out;
+            margin-bottom: -15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .error-bubble::after {
+            content: " ";
+            position: absolute;
+            top: 100%;
+            left: 15px;
+
+            border-width: 6px;
+            border-style: solid;
+            border-color: #dc3545 transparent transparent transparent;
+        }
+
+        .input-error {
+            border: 1px solid #dc3545;
         }

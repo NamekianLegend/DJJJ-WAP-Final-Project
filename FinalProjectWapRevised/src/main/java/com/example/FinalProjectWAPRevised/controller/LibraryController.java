@@ -223,12 +223,13 @@ public class LibraryController {
                                   BindingResult bindingResult,
                                   Model model) {
 
-        if(bindingResult.hasErrors()){
+        if (!form.getPassword().equals(form.getConfirm())) {
+            model.addAttribute("passwordError", "Passwords do not match.");
+            bindingResult.rejectValue("confirm", "userForm Error -> Confirm Password", "Passwords do not match");
             return "register";
         }
 
-        if (!form.getPassword().equals(form.getConfirm())) {
-            model.addAttribute("passwordError", "Passwords do not match.");
+        if(bindingResult.hasErrors()){
             return "register";
         }
 
