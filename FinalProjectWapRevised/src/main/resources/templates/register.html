@@ -9,7 +9,7 @@
 <body>
     <div class="register-container">
         <h1>Create Account</h1>
-        <form th:action="@{/register}" th:object="${form}" method="post">
+        <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
             <div class="form-group">
                 <label for="name">Full Name</label>
                 <input type="text" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'input-error' : ''" />

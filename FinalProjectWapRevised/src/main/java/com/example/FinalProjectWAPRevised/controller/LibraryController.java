@@ -189,7 +189,6 @@ public class LibraryController {
                 .findFirst()
                 .orElse(null); //if user doesn't exist return null
 
-
         if (customer!=null){
             session.setAttribute("loggedInCustomer", customer);
 
@@ -203,6 +202,9 @@ public class LibraryController {
             model.addAttribute("boughtItems",
                     itemRepository.findAll().stream().filter(Item::isBought).toList());
             return "store";
+        }else{
+            String errorMessage = "Invalid Login";
+            model.addAttribute("loginError", errorMessage);
         }
 
         return "login";
