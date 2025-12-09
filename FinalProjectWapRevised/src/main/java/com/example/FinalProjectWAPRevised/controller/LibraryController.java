@@ -168,7 +168,6 @@ public String removeFromBasket(@RequestParam Long itemId, HttpSession session){
                 .findFirst()
                 .orElse(null); //if user doesn't exist return null
 
-
         if (customer!=null){
             session.setAttribute("loggedInCustomer", customer);
 
@@ -179,6 +178,9 @@ public String removeFromBasket(@RequestParam Long itemId, HttpSession session){
                     itemRepository.findAll().stream().filter(item-> !item.isBought()).toList());
 
             return "store";
+        }else{
+            String errorMessage = "Invalid Login";
+            model.addAttribute("loginError", errorMessage);
         }
 
         return "login";
@@ -199,12 +201,13 @@ public String removeFromBasket(@RequestParam Long itemId, HttpSession session){
                                   BindingResult bindingResult,
                                   Model model) {
 
-        if(bindingResult.hasErrors()){
+        if (!form.getPassword().equals(form.getConfirm())) {
+            model.addAttribute("passwordError", "Passwords do not match.");
+            bindingResult.rejectValue("confirm", "userForm Error -> Confirm Password", "Passwords do not match");
             return "register";
         }
 
-        if (!form.getPassword().equals(form.getConfirm())) {
-            model.addAttribute("passwordError", "Passwords do not match.");
+        if(bindingResult.hasErrors()){
             return "register";
         }
 

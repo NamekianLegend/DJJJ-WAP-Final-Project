@@ -49,3 +49,8 @@ body {
         button:hover {
             background: #764ba2;
         }
+        .loginError{
+            color: red;
+            text-align: center;
+            font-weight: bold;
+        }
