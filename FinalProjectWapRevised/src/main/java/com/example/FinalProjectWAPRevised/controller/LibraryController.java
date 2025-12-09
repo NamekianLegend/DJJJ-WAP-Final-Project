@@ -54,31 +54,31 @@ for(User user: users){
     return "login";
 }
 
-    //Borrow book
+    //Buy Item
     @PostMapping("borrow")
-    public String borrowBook(@RequestParam Long bookId, Model model) {
-        Book book = bookRepository.findById(bookId).orElse(null);
-        if (book != null) {
-            book.setBorrowed(true);
+    public String boughtItem(@RequestParam Long itemId, Model model) {
+        Item item = itemRepository.findById(itemId).orElse(null);
+        if (item != null) {
+            item.setBorrowed(true);
 
-            //update book with new isBorrowed value
-            bookRepository.save(book);
+            //update item with new isBought value
+            itemRepository.save(item);
         }
 
 
         //makes sure to return to the the home page istead of having them sign in again
         model.addAttribute("username", "User");
 
-        //reloads the books to the home page
-        loadBooks(model);
+        //reloads the items to the home page
+        loadItems(model);
 
         return "home";
     }
 
 
     @PostMapping("/return")
-    public String returnBook(@RequestParam Long bookId, Model model){
-        Item item = itemRepository.findById(bookId).orElse(null);
+    public String returnItem(@RequestParam Long itemId, Model model){
+        Item item = itemRepository.findById(itemId).orElse(null);
 
         if(item != null){
             item.setBorrowed(false);
@@ -86,19 +86,19 @@ for(User user: users){
         }
 
         model.addAttribute("username", "User");
-        loadBooks(model);
+        loadItems(model);
 
 
         return "home";
     }
 
-    //loads books into the available and unavialable books slot in home
-    private void loadBooks(Model model) {
-        List<Item> allBooks = itemRepository.findAll();
-        model.addAttribute("availableBooks",
-                allBooks.stream().filter(book -> !book.isBought()).toList());
-        model.addAttribute("borrowedBooks",
-                allBooks.stream().filter(Item::isBought).toList());
+    //loads items into the available and unavialable items slot in home
+    private void loadItems(Model model) {
+        List<Item> allItems = itemRepository.findAll();
+        model.addAttribute("availableItems",
+                allItems.stream().filter(item -> !item.isBought()).toList());
+        model.addAttribute("borrowedItems",
+                allItems.stream().filter(Item::isBought).toList());
     }
 
     // login page
