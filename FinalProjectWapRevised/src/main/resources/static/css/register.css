@@ -92,7 +92,3 @@ body {
             border-style: solid;
             border-color: #dc3545 transparent transparent transparent;
         }
-
-        .input-error {
-            border: 1px solid #dc3545;
-        }

@@ -12,22 +12,22 @@
         <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'input-error' : ''" />
+                <input type="text" th:field="*{name}" />
                 <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-bubble">Name Error</span>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="text" id="email" name="email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'input-error' : ''" required>
+                <input type="text" id="email" name="email" th:field="*{email}" required>
                 <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-bubble">Email Error</span>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? 'input-error' : ''" required>
+                <input type="password" id="password" name="password" th:field="*{password}" required>
                 <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-bubble">Password Error</span>
             </div>
             <div class="form-group">
                 <label for="confirm">Confirm Password</label>
-                <input type="password" id="confirm" name="confirm" th:field="*{confirm}" th:classappend="${#fields.hasErrors('confirm')} ? 'input-error' : ''" required>
+                <input type="password" id="confirm" name="confirm" th:field="*{confirm}" required>
                 <span th:if="${#fields.hasErrors('confirm')}" th:errors="*{confirm}" class="error-bubble">Confirm Error</span>
             </div>
             <button type="submit">Register</button>
