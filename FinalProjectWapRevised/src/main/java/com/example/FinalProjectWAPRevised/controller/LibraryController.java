@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -11,6 +12,9 @@ import com.example.FinalProjectWAPRevised.model.Item;
 import com.example.FinalProjectWAPRevised.model.User;
 import com.example.FinalProjectWAPRevised.repository.ItemRepository;
 import com.example.FinalProjectWAPRevised.repository.UserRepository;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 public class LibraryController {
@@ -50,6 +54,88 @@ for(User user: users){
     return "login";
 }
 
+    //Borrow book
+    @PostMapping("borrow")
+    public String borrowBook(@RequestParam Long bookId, Model model) {
+        Book book = bookRepository.findById(bookId).orElse(null);
+        if (book != null) {
+            book.setBorrowed(true);
+
+            //update book with new isBorrowed value
+            bookRepository.save(book);
+        }
+
+
+        //makes sure to return to the the home page istead of having them sign in again
+        model.addAttribute("username", "User");
+
+        //reloads the books to the home page
+        loadBooks(model);
+
+        return "home";
+    }
+
+
+    @PostMapping("/return")
+    public String returnBook(@RequestParam Long bookId, Model model){
+        Item item = itemRepository.findById(bookId).orElse(null);
+
+        if(item != null){
+            item.setBorrowed(false);
+            itemRepository.save(item);
+        }
+
+        model.addAttribute("username", "User");
+        loadBooks(model);
+
+
+        return "home";
+    }
+
+    //loads books into the available and unavialable books slot in home
+    private void loadBooks(Model model) {
+        List<Item> allBooks = itemRepository.findAll();
+        model.addAttribute("availableBooks",
+                allBooks.stream().filter(book -> !book.isBought()).toList());
+        model.addAttribute("borrowedBooks",
+                allBooks.stream().filter(Item::isBought).toList());
+    }
+
+    // login page
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "login";
+    }
+
+    // register page
+    @GetMapping("/register")
+    public String showRegisterForm() {
+        return "register";
+    }
+
+    // register form submission
+    @PostMapping("/register")
+    public String processRegister(@Valid @RequestParam String name,
+            @Valid @RequestParam String email,
+            @Valid @RequestParam String password, @Valid @RequestParam String confirm,
+            Model model) {
+        if(password.equals(confirm)){
+            User tempUser = new User(name,email,password);
+            
+            userRepository.save(tempUser);
+            System.out.println("\nUSER REGISTRATION");
+            tempUser.displayDetails();
+            return "login";
+        }
+        
+        return "register";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // This clears all session attributes
+        return "redirect:/login"; // Redirect to login page
+    }
 
 }  
 
