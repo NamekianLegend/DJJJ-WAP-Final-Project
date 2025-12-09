@@ -59,7 +59,7 @@ for(User user: users){
     public String boughtItem(@RequestParam Long itemId, Model model) {
         Item item = itemRepository.findById(itemId).orElse(null);
         if (item != null) {
-            item.setBorrowed(true);
+            item.setBorrowed(true); // error here
 
             //update item with new isBought value
             itemRepository.save(item);
@@ -81,7 +81,7 @@ for(User user: users){
         Item item = itemRepository.findById(itemId).orElse(null);
 
         if(item != null){
-            item.setBorrowed(false);
+            item.setBorrowed(false); // Error Here
             itemRepository.save(item);
         }
 
@@ -120,7 +120,7 @@ for(User user: users){
             @Valid @RequestParam String password, @Valid @RequestParam String confirm,
             Model model) {
         if(password.equals(confirm)){
-            User tempUser = new User(name,email,password);
+            User tempUser = new User(name,email,password);// Error Here
             
             userRepository.save(tempUser);
             System.out.println("\nUSER REGISTRATION");
