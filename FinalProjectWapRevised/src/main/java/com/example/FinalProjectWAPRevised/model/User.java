@@ -2,13 +2,21 @@ package com.example.FinalProjectWAPRevised.model;
 
 import java.util.ArrayList;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+@Entity
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
 
     @NotBlank(message = "No Blanks ")
@@ -31,11 +39,13 @@ public class User {
     )
     private String password;
 
-   public User(String name, String password) {
-        this.name = name;
-        this.email = name + "@gmail.com";
-        this.creditCard = generateCreditCard();
-        this.password = password;
+    public User(){};
+
+    public User(String name, String password) {
+            this.name = name;
+            this.email = name + "@gmail.com";
+            this.creditCard = generateCreditCard();
+            this.password = password;
     }
     // list for what the user has bought
     private ArrayList<Item> itemBought = new ArrayList<>();

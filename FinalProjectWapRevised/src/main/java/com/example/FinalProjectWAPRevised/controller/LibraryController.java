@@ -120,7 +120,7 @@ for(User user: users){
             @Valid @RequestParam String password, @Valid @RequestParam String confirm,
             Model model) {
         if(password.equals(confirm)){
-            User tempUser = new User(name,email,password);// Error Here
+            User tempUser = new User(name,password);// Error Here
             
             userRepository.save(tempUser);
             System.out.println("\nUSER REGISTRATION");
