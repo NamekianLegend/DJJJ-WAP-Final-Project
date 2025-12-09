@@ -6,31 +6,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 @Entity
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
-
-
-    @NotBlank(message = "Name cannot be blank")
     private String name;
-
-
-    @NotBlank(message = "Email cannot be blank")
-    @Email(message = "Email must be valid")
     private String email;
-
     private String creditCard;
-    @NotBlank(message = "Password cannot be blank")
-    @Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%?&])[A-Za-z\\d@$!%?&]{6,120}$",
-        message = "Password must contain upper, lower, number, and special character"
-    )
     private String password;
 
     public Customer(){};
@@ -44,9 +29,6 @@ public class Customer {
     // list for what the user has bought
     private ArrayList<Item> itemBought = new ArrayList<>();
 
-
-
- 
     // getters and settters
     public ArrayList<Item> getItemBought() {
         return itemBought;
