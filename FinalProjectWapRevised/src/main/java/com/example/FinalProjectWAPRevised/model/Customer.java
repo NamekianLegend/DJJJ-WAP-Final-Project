@@ -8,42 +8,36 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 @Entity
-public class User {
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
-    @NotBlank(message = "No Blanks ")
-    @NotNull
-    @Size(min = 5, message = "Name should have at least 5 characters")
+    @NotBlank(message = "Name cannot be blank")
     private String name;
 
 
-    @NotBlank(message = "I need an email from you please and thank you! ")
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", message = "Stop trying to use a bad email! >:(")
-        @Size(max = 100, message = "Email must be less than 100 characters")
-    @Email(message = "Im expecting a VALID email please and thank you!")
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email must be valid")
     private String email;
 
-    @NotBlank(message = "No Blanks ")
     private String creditCard;
-     @Pattern(
+    @NotBlank(message = "Password cannot be blank")
+    @Pattern(
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%?&])[A-Za-z\\d@$!%?&]{6,120}$",
-        message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
+        message = "Password must contain upper, lower, number, and special character"
     )
     private String password;
 
-    public User(){};
+    public Customer(){};
 
-    public User(String name, String password) {
+    public Customer(String name, String email, String password) {
             this.name = name;
-            this.email = name + "@gmail.com";
+            this.email = email;
             this.creditCard = generateCreditCard();
             this.password = password;
     }
@@ -86,9 +80,8 @@ public class User {
 
         return cardNumber;
     }
-
+    
     public void displayDetails() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'displayDetails'");
+        System.out.println("Name: " + name + " | Email: " + email + " | Credit Card: " + creditCard);
     }
 }

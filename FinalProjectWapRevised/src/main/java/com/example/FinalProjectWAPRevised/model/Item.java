@@ -14,7 +14,11 @@ public class Item {
     private String title;
     private String author;
     private Double price;
+    private boolean bought = false;
 
+
+    // default constructor
+    public Item (){}
     
     public Item(Long id, String title, String author, Double price) {
         this.id = id;
@@ -22,8 +26,7 @@ public class Item {
         this.author = author;
         this.price = price;
     }
-    // default constructor
-    public Item (){}
+
 
     // getters and setters
     public Long getId() {
@@ -32,18 +35,21 @@ public class Item {
     public void setId(Long id) {
         this.id = id;
     }
+
     public String getTitle() {
         return title;
     }
     public void setTitle(String title) {
         this.title = title;
     }
+
     public String getAuthor() {
         return author;
     }
     public void setAuthor(String author) {
         this.author = author;
     }
+
     public Double getPrice() {
         return price;
     }
@@ -51,19 +57,18 @@ public class Item {
         this.price = price;
     }
 
-    // to string, do we need this? I think we do, delete if not needed i presumed we needed a to string
-    @Override
+    public boolean isBought(){
+        return bought;
+    }
+    public void setBought(boolean bought){
+        this.bought =  bought;
+    }
+
+
     public String toString() {
-        return "Item [id=" + id + 
-        ", title=" + title + 
-        ", author=" + author + 
-        ", price=" + price + "]";
-    }
-    public boolean isBought() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isBought'");
-    }
-
-
-    
+        return "Item \n\t[Id: " + id + 
+                ", Title: " + title + 
+                ", Author: " + author + 
+                ", Price: " + price + "]";
+    }   
 }

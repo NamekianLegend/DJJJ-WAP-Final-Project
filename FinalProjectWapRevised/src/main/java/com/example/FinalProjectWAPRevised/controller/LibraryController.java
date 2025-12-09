@@ -4,14 +4,17 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.FinalProjectWAPRevised.model.Item;
-import com.example.FinalProjectWAPRevised.model.User;
+import com.example.FinalProjectWAPRevised.model.Customer;
+import com.example.FinalProjectWAPRevised.model.userForm;
 import com.example.FinalProjectWAPRevised.repository.ItemRepository;
-import com.example.FinalProjectWAPRevised.repository.UserRepository;
+import com.example.FinalProjectWAPRevised.repository.CustomerRepository;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -20,39 +23,12 @@ import jakarta.validation.Valid;
 public class LibraryController {
 
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
 
-    public LibraryController(ItemRepository itemRepository, UserRepository userRepository){
+    public LibraryController(ItemRepository itemRepository, CustomerRepository customerRepository){
         this.itemRepository=itemRepository;
-        this.userRepository = userRepository;
+        this.customerRepository = customerRepository;
     }
-
-// logging in
-@PostMapping("/login")
-
-public String processLogin(@RequestParam String email, @RequestParam String password, Model model) {
-// finally figured out what I was doing wrong and its 12:43 AM, why am i so slow to figure this stuff out!
-List<User> users = userRepository.findAll();
-for(User user: users){
-    if (user.getEmail().equals(email)&&user.getPassword().equals(password)){
-        model.addAttribute("username",user.getName());
-
-        // return a list of items if isBought is false to the model
-        model.addAttribute("availableitems",
-        itemRepository.findAll().stream().filter(item-> !item.isBought()).toList());
-
-        // return a list of items if isBought is true to the model
-        model.addAttribute("boughtItems",
-        itemRepository.findAll().stream()
-        .filter(Item::isBought) // not sure what happend here
-        .toList());
-        return "home";
-        
-
-        }
-    }
-    return "login";
-}
 
     //Buy Item
     @PostMapping("bought")
@@ -101,34 +77,71 @@ for(User user: users){
                 allItems.stream().filter(Item::isBought).toList());
     }
 
+
+    //-----------------------------LOGIN-----------------------------
     // login page
     @GetMapping("/login")
     public String showLoginForm() {
         return "login";
     }
+    
+    // logging in
+    @PostMapping("/login")
+    public String processLogin(@RequestParam String username,
+                                @RequestParam String password,
+                                Model model) {
+    
+        // Find user by name and password from repository
+        Customer customer = customerRepository.findAll().stream()
+                .filter(u -> u.getName().equals(username) && u.getPassword().equals(password))
+                .findFirst()
+                .orElse(null); //if user doesn't exist return null
 
-    // register page
-    @GetMapping("/register")
-    public String showRegisterForm() {
-        return "register";
+
+        if (customer!=null){
+            model.addAttribute("username",customer.getName());
+
+            // return a list of items if isBought is false to the model
+            model.addAttribute("availableitems",
+                    itemRepository.findAll().stream().filter(item-> !item.isBought()).toList());
+
+            // return a list of items if isBought is true to the model
+            model.addAttribute("boughtItems",
+                    itemRepository.findAll().stream().filter(Item::isBought).toList());
+            return "store";
+        }
+
+        return "login";
     }
 
+
+    //-----------------------------REGISTER-----------------------------
+    // register page
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("form", new userForm());
+        return "register";
+    }
+    
     // register form submission
     @PostMapping("/register")
-    public String processRegister(@Valid @RequestParam String name,
-            @Valid @RequestParam String email,
-            @Valid @RequestParam String password, @Valid @RequestParam String confirm,
-            Model model) {
-        if(password.equals(confirm)){
-            User tempUser = new User(name,password);// Error Here
-            
-            userRepository.save(tempUser);
-            System.out.println("\nUSER REGISTRATION");
-            tempUser.displayDetails();
-            return "login";
+    public String processRegister(@Valid @ModelAttribute("form") userForm form,
+                                  BindingResult bindingResult,
+                                  Model model) {
+
+        if(bindingResult.hasErrors()){
+            return "register";
         }
+
+        if (!form.getPassword().equals(form.getConfirm())) {
+            model.addAttribute("passwordError", "Passwords do not match.");
+            return "register";
+        }
+
+        Customer user = new Customer(form.getName(), form.getEmail(), form.getPassword());
+        customerRepository.save(user);
         
-        return "register";
+        return "login";
     }
 
     @GetMapping("/logout")
