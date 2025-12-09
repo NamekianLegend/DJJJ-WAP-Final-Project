@@ -1,11 +1,15 @@
 package com.example.FinalProjectWAPRevised.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Customer {
@@ -13,7 +17,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Long id;
-    private String name;
+    private String username;
     private String email;
     private String creditCard;
     private String password;
@@ -21,25 +25,30 @@ public class Customer {
     public Customer(){};
 
     public Customer(String name, String email, String password) {
-            this.name = name;
+            this.username = name;
             this.email = email;
             this.creditCard = generateCreditCard();
             this.password = password;
     }
     // list for what the user has bought
-    private ArrayList<Item> itemBought = new ArrayList<>();
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Item> basket = new ArrayList<>();
 
     // getters and settters
-    public ArrayList<Item> getItemBought() {
-        return itemBought;
+    public Long getId(){
+        return id;
     }
 
-    public void setItemBought(ArrayList<Item> itemBought) {
-        this.itemBought = itemBought;
+    public List<Item> getBasket() {
+        return basket;
     }
 
-    public String getName() {
-        return name;
+    public void setBasket(List<Item> basket) {
+        this.basket = basket;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getEmail() {
@@ -64,6 +73,6 @@ public class Customer {
     }
     
     public void displayDetails() {
-        System.out.println("Name: " + name + " | Email: " + email + " | Credit Card: " + creditCard);
+        System.out.println("Name: " + username + " | Email: " + email + " | Credit Card: " + creditCard);
     }
 }

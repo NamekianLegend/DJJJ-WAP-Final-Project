@@ -1,5 +1,6 @@
 package com.example.FinalProjectWAPRevised.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -64,7 +65,6 @@ public class LibraryController {
         model.addAttribute("username", "User");
         loadItems(model);
 
-
         return "home";
     }
 
@@ -77,11 +77,102 @@ public class LibraryController {
                 allItems.stream().filter(Item::isBought).toList());
     }
 
+    //-----------------------------CHECKOUT-----------------------------
+    @GetMapping("/store")
+    public String showStore(HttpSession session, Model model){
+        Customer customer = (Customer) session.getAttribute("loggedInCustomer");
+
+        if(customer == null){
+            return "login";
+        }
+
+        model.addAttribute("customer", customer);
+        return "store";
+    }
+
+
+
+    //-----------------------------CHECKOUT-----------------------------
+    @GetMapping("/checkout")
+    public String showCheckout(HttpSession session, Model model){
+        Customer customer = (Customer) session.getAttribute("loggedInCustomer");
+
+        if(customer == null){
+            return "login";
+        }
+
+        model.addAttribute("customer", customer);
+        return "checkout";
+    }
+
+    //-----------------------------PROFILE-----------------------------
+    @GetMapping("/profile")
+    public String showProfile(HttpSession session, Model model){
+        Customer customer = (Customer) session.getAttribute("loggedInCustomer");
+
+        if(customer == null){
+            return "login";
+        }
+
+        model.addAttribute("customer", customer);
+        return "profile";
+    }
+
+    //-----------------------------BASKET-----------------------------
+    @GetMapping("/basket")
+    public String showBasket(HttpSession session, Model model){
+        Customer customer = (Customer) session.getAttribute("loggedInCustomer");
+
+        if(customer == null){
+            return "login";
+        }
+
+        model.addAttribute("customer", customer);
+        return "basket";
+    }
+
+    @PostMapping("/basket/add")
+    public String addToBasket(@RequestParam String title,
+                                @RequestParam String author,
+                                @RequestParam double price,
+                                Principal principal) {
+
+        //find customer baised off principal
+        Customer customer = customerRepository.findByUsername(principal.getName());
+
+        //add item to customer basket
+        customer.getBasket().add(new Item(title, author, price, customer));
+
+        // update customer
+        customerRepository.save(customer);
+        return "store";
+    }
+
+    @PostMapping("/basket/remove")
+    public String removeFromBasket(@RequestParam String title, Principal principal){
+        //get customer
+        Customer customer = customerRepository.findByUsername(principal.getName());
+
+        //remove item
+        customer.getBasket().removeIf(item -> item.getTitle().equals(title));
+
+        //update repo
+        customerRepository.save(customer);
+
+        return "store";
+    }
 
     //-----------------------------LOGIN-----------------------------
     // login page
     @GetMapping("/login")
-    public String showLoginForm() {
+    public String showLoginForm(HttpSession session, Model model){
+        Customer customer = (Customer) session.getAttribute("loggedInCustomer");
+
+        if(customer == null){
+            return "login";
+        }
+
+        model.addAttribute("customer", customer);
         return "login";
     }
     
@@ -89,17 +180,20 @@ public class LibraryController {
     @PostMapping("/login")
     public String processLogin(@RequestParam String username,
                                 @RequestParam String password,
+                                HttpSession session,
                                 Model model) {
     
         // Find user by name and password from repository
         Customer customer = customerRepository.findAll().stream()
-                .filter(u -> u.getName().equals(username) && u.getPassword().equals(password))
+                .filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password))
                 .findFirst()
                 .orElse(null); //if user doesn't exist return null
 
 
         if (customer!=null){
-            model.addAttribute("username",customer.getName());
+            session.setAttribute("loggedInCustomer", customer);
+
+            model.addAttribute("username",customer.getUsername());
 
             // return a list of items if isBought is false to the model
             model.addAttribute("availableitems",
