@@ -76,4 +76,9 @@ public class User {
 
         return cardNumber;
     }
+
+    public void displayDetails() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'displayDetails'");
+    }
 }
