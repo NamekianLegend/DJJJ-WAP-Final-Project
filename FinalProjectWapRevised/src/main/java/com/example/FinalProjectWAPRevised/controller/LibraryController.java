@@ -55,11 +55,11 @@ for(User user: users){
 }
 
     //Buy Item
-    @PostMapping("borrow")
+    @PostMapping("bought")
     public String boughtItem(@RequestParam Long itemId, Model model) {
         Item item = itemRepository.findById(itemId).orElse(null);
         if (item != null) {
-            item.setBorrowed(true); // error here
+            item.setBought(true); // error here
 
             //update item with new isBought value
             itemRepository.save(item);
@@ -81,7 +81,7 @@ for(User user: users){
         Item item = itemRepository.findById(itemId).orElse(null);
 
         if(item != null){
-            item.setBorrowed(false); // Error Here
+            item.setBought(false); // Error Here
             itemRepository.save(item);
         }
 
@@ -97,7 +97,7 @@ for(User user: users){
         List<Item> allItems = itemRepository.findAll();
         model.addAttribute("availableItems",
                 allItems.stream().filter(item -> !item.isBought()).toList());
-        model.addAttribute("borrowedItems",
+        model.addAttribute("boughtItems",
                 allItems.stream().filter(Item::isBought).toList());
     }
 
