@@ -14,15 +14,17 @@
         </div>
     </nav>
 
+
+    <!-- Available Items -->
     <div class="store-container">
         <h1>Available Books</h1>
         <div class="book-grid">
-            <div class="book-card" th:each="book : ${books}">
-                <h2 th:text="${book.title}">Book Title</h2>
-                <p th:text="${book.author}">Author Name</p>
-                <p th:text="${book.price}">Price</p>
+            <div class="book-card" th:each="item : ${availableItems}">
+                <h2 th:text="${item.title}">Item Title</h2>
+                <p th:text="${item.author}">Vendor Name</p>
+                <p th:text="${item.price}">Price</p>
                 <form th:action="@{/basket/add}" method="post">
-                    <input type="hidden" th:value="${book.id}" name="bookId">
+                    <input type="hidden" th:value="${item.id}" name="itemId">
                     <button type="submit">Add to Basket</button>
                 </form>
             </div>

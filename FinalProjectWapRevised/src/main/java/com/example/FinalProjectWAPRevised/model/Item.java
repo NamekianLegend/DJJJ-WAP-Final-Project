@@ -1,9 +1,5 @@
 package com.example.FinalProjectWAPRevised.model;
 
-
-import org.hibernate.annotations.ManyToAny;
-
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +30,12 @@ public class Item {
         this.author = author;
         this.price = price;
         this.customer = customer;
+    }
+
+        public Item(String title, String author, Double price) {
+        this.title = title;
+        this.author = author;
+        this.price = price;
     }
 
 
