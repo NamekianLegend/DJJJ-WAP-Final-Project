@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basket</title>
+    <link rel="stylesheet" th:href="@{/css/basket.css}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a th:href="@{/store}" class="nav-link">Store</a>
+            <a th:href="@{/basket}" class="nav-link">Basket</a>
+            <a th:href="@{/profile}" class="nav-link">Profile</a>
+        </div>
+    </nav>
+
+    <!-- Basket Content -->
+<main class="page">
+    <div class="basket-container">
+        <h1>Your Basket</h1>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Vendor</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+                <tr th:each="item : ${basket}">
+                    <td th:text="${item.title}">Book Title</td>
+                    <td th:text="${item.author}">Author Name</td>
+                    <td th:text="${item.price}">$0.00</td>
+                    <td>
+                        <form th:action="@{/basket/remove}" method="post">
+                            <input type="hidden" th:value="${item.id}" name="itemId">
+                            <button type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+        </table>
+        <a th:href="@{/checkout}">
+            <button>Proceed to Checkout</button>
+        </a>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+</head>
+<body>
+    <div class="register-container">
+        <h1>Create Account</h1>
+        <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" th:field="*{name}" />
+                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-bubble">Name Error</span>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" th:field="*{email}" required>
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-bubble">Email Error</span>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" th:field="*{password}" required>
+                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-bubble">Password Error</span>
+            </div>
+            <div class="form-group">
+                <label for="confirm">Confirm Password</label>
+                <input type="password" id="confirm" name="confirm" th:field="*{confirm}" required>
+                <span th:if="${#fields.hasErrors('confirm')}" th:errors="*{confirm}" class="error-bubble">Confirm Error</span>
+            </div>
+            <button type="submit">Register</button>
+            <p class="muted">Already have an account? <a th:href="@{/login}">Login</a></p>
+        </form>
+    </div>
+
+</body>
+</html>
