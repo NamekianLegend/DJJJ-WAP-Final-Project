@@ -21,8 +21,8 @@
         <div class="book-grid">
             <div class="book-card" th:each="item : ${availableItems}">
                 <h2 th:text="${item.title}">Item Title</h2>
-                <p th:text="${item.author}">Vendor Name</p>
-                <p th:text="${item.price}">Price</p>
+                <p th:text="${item.author}">Author</p>
+                <p th:text="'$' + ${#numbers.formatDecimal(item.price, 0, 'POINT', 2, 'POINT')}">Price</p>
                 <form th:action="@{/basket/add}" method="post">
                     <input type="hidden" th:value="${item.id}" name="itemId">
                     <button type="submit">Add to Basket</button>

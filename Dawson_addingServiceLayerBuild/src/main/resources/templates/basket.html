@@ -22,14 +22,14 @@
         <table>
             <tr>
                 <th>Title</th>
-                <th>Vendor</th>
+                <th>Author</th>
                 <th>Price</th>
                 <th>Action</th>
             </tr>
                 <tr th:each="item : ${basket}">
                     <td th:text="${item.title}">Book Title</td>
                     <td th:text="${item.author}">Author Name</td>
-                    <td th:text="${item.price}">$0.00</td>
+                    <td th:text="'$' + ${#numbers.formatDecimal(item.price, 0, 'POINT', 2, 'POINT')}">$0.00</td>
                     <td>
                         <form th:action="@{/basket/remove}" method="post">
                             <input type="hidden" th:value="${item.id}" name="itemId">
@@ -38,6 +38,10 @@
                     </td>
                 </tr>
         </table>
+    <div class="basket-total">
+    <strong>Total:</strong>
+    <span th:text="'$' + ${#numbers.formatDecimal(basketTotal, 0, 'POINT', 2, 'POINT')}">0.00</span>
+</div>
     <a th:href="@{/checkout}" class="checkout-button">Proceed to Checkout</a>
     </div>
 </main>

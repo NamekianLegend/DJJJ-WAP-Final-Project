@@ -3,8 +3,6 @@ package com.example.FinalProjectWAPRevised.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 
 @Entity
 public class Customer {
@@ -83,4 +80,15 @@ public class Customer {
     public void displayDetails() {
         System.out.println("Name: " + username + " | Email: " + email + " | Credit Card: " + creditCard);
     }
+
+    public Double getBasketTotal() {
+    if (basket == null || basket.isEmpty()) {
+        return 0.0;
+    }
+    return basket.stream()
+                 .mapToDouble(Item::getPrice)
+                 .sum();
 }
+}
+
+

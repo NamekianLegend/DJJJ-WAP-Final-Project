@@ -117,6 +117,7 @@ public class StoreController {
 
         model.addAttribute("customer", customer);
         model.addAttribute("basket", customer.getBasket());
+        model.addAttribute("basketTotal", customer.getBasketTotal());
 
         return "basket";
     }
