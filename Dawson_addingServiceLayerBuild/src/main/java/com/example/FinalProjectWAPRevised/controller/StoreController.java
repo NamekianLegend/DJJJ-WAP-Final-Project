@@ -62,15 +62,12 @@ public class StoreController {
                               @RequestParam String card,
                               HttpSession session,
                               Model model) {
-    System.out.println("✅ Checkout POST triggered");
+    
 
     Customer sessionCustomer = (Customer) session.getAttribute("loggedInCustomer");
     if (sessionCustomer == null) {
         return "login";
     }
-
-    // Optional: finalize order
-   // customerService.checkout(sessionCustomer.getId(), address, card);
 
     // Update session
     Customer updatedCustomer = customerService.showBasket(sessionCustomer.getUsername());
