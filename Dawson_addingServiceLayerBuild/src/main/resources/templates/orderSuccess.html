@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Success</title>
+    <link rel="stylesheet" th:href="@{/css/ordersuccess.css}">
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">✅</div>
+        <h1>Order Placed Successfully!</h1>
+        <p>Your order has been placed, <span th:text="${customer.username}">Customer</span>.</p>
+        <a class="back-link" th:href="@{/store}">Back to Store</a>
+    </div>
+</body>
+</html>

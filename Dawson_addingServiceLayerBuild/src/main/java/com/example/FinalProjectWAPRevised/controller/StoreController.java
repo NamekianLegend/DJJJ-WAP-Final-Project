@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import com.example.FinalProjectWAPRevised.model.Customer;
 import com.example.FinalProjectWAPRevised.model.userForm;
-
 import com.example.FinalProjectWAPRevised.service.CustomerService;
 import com.example.FinalProjectWAPRevised.service.ItemService;
 
@@ -17,12 +17,12 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
-public class LibraryController {
+public class StoreController {
 
     private final ItemService itemService;
     private final CustomerService customerService;
 
-    public LibraryController(ItemService itemService, CustomerService customerService){
+    public StoreController(ItemService itemService, CustomerService customerService){
         this.itemService = itemService;
         this.customerService = customerService;
     }
@@ -56,6 +56,28 @@ public class LibraryController {
         model.addAttribute("customer", customer);
         return "checkout";
     }
+
+    @PostMapping("/checkout")
+    public String processCheckout(@RequestParam String address,
+                              @RequestParam String card,
+                              HttpSession session,
+                              Model model) {
+    System.out.println("✅ Checkout POST triggered");
+
+    Customer sessionCustomer = (Customer) session.getAttribute("loggedInCustomer");
+    if (sessionCustomer == null) {
+        return "login";
+    }
+
+    // Optional: finalize order
+   // customerService.checkout(sessionCustomer.getId(), address, card);
+
+    // Update session
+    Customer updatedCustomer = customerService.showBasket(sessionCustomer.getUsername());
+    session.setAttribute("loggedInCustomer", updatedCustomer);
+
+    return "redirect:/orderSuccess";
+}
 
     //-----------------------------PROFILE-----------------------------
     @GetMapping("/profile")
@@ -111,7 +133,7 @@ public class LibraryController {
         Customer customer = customerService.addItemToBasket(sessionCustomer.getId(), itemId);
 
         session.setAttribute("loggedInCustomer", customer);
-        return "redirect:/store";
+        return "redirect:/basket";
     }
 
 
@@ -132,6 +154,18 @@ public String removeFromBasket(@RequestParam Long itemId, HttpSession session){
     session.setAttribute("loggedInCustomer", customer);
 
     return "redirect:/basket";
+}
+
+@GetMapping("/orderSuccess")
+public String showOrderSuccess(HttpSession session, Model model){
+    Customer customer = (Customer) session.getAttribute("loggedInCustomer");
+
+    if(customer == null){
+        return "login";
+    }
+
+    model.addAttribute("customer", customer);
+    return "orderSuccess";
 }
 
     //-----------------------------LOGIN-----------------------------
@@ -211,7 +245,7 @@ public String removeFromBasket(@RequestParam Long itemId, HttpSession session){
         //reloads the items to the home page
         loadItems(model);
 
-        return "store";
+        return "redirect:/basket";
     }
 
 
