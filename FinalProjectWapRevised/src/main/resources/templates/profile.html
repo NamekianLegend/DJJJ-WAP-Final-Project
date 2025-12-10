@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Profile</title>
     <link rel="stylesheet" th:href="@{/css/profile.css}">
 </head>
 <body>
-    <nav class="navbar">
+
+<nav class="navbar">
     <div class="nav-left">
         <a th:href="@{/store}" class="nav-link">Store</a>
         <a th:href="@{/basket}" class="nav-link">Basket</a>
@@ -14,24 +15,44 @@
     </div>
 </nav>
 
-    <div class="profile-container">
-        <h1>Your Profile</h1>
-        <form th:action="@{/profile/update}" method="post">
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" th:value="${customer.username}" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" th:value="${customer.email}" required>
-            </div>
-            <div class="form-group">
-                <label for="password">New Password</label>
-                <input type="password" id="password" name="password">
-            </div>
-            <button type="submit">Update Profile</button>
-        </form>
-        <p class="muted">Want to log out? <a th:href="@{/logout}">Logout</a></p>
-    </div>
+<div class="profile-container">
+    <h1>Your Profile</h1>
+
+    <form th:action="@{/profile/update}" th:object="${form}" method="post">
+
+        <div class="form-group">
+            <label for="name">Username</label>
+            <input type="text" id="name" th:field="*{name}" required>
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-bubble"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" th:field="*{email}" required>
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-bubble"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="text" id="password" th:field="*{password}" required>
+            <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-bubble"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm">Confirm Password</label>
+            <input type="password" id="confirm" th:field="*{confirm}" required>
+            <span th:if="${#fields.hasErrors('confirm')}" th:errors="*{confirm}" class="error-bubble"></span>
+        </div>
+
+        <button type="submit" class="btn-save">Update Profile</button>
+
+    </form>
+
+    <p class="muted">
+        Want to log out? <a th:href="@{/logout}">Logout</a>
+    </p>
+</div>
+
+
 </body>
 </html>

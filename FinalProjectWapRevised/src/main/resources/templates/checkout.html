@@ -28,6 +28,8 @@
                 <label for="card">Card Number</label>
                 <input type="text" id="card" name="card" required>
             </div>
+        </form>
+        <form th:action="@{/checkout/submit}" method="post">
             <button type="submit">Place Order</button>
         </form>
     </div>
