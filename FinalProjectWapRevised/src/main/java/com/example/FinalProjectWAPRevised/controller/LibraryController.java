@@ -1,6 +1,5 @@
 package com.example.FinalProjectWAPRevised.controller;
 
-import java.security.Principal;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -61,6 +60,31 @@ public class LibraryController {
         return "checkout";
     }
 
+    @PostMapping("/checkout/submit")
+    public String completePurchase(HttpSession session, Model model){
+        Customer sessionCustomer = (Customer) session.getAttribute("loggedInCustomer");
+
+        if(sessionCustomer == null){ return "login";}
+
+        Customer customer = customerRepository.findById(sessionCustomer.getId()).orElseThrow();
+
+        double totalCost = 0;
+        for(Item item : customer.getBasket()){
+            totalCost += item.getPrice();
+        }
+
+        System.out.println("Checkout Complete! Total Cost: $"+totalCost);
+
+        customer.getBasket().clear();
+
+        // update session and customer repository
+        customerRepository.save(customer);
+        session.setAttribute("loggedInCustomer", customer);
+
+        return "redirect:/store";
+
+    }
+
     //-----------------------------PROFILE-----------------------------
     @GetMapping("/profile")
     public String showProfile(HttpSession session, Model model){
@@ -70,6 +94,15 @@ public class LibraryController {
             return "login";
         }
 
+
+        //preload old values of user
+        userForm form = new userForm();
+        form.setName(customer.getUsername());
+        form.setEmail(customer.getEmail());
+        form.setPassword(customer.getPassword());
+
+
+        model.addAttribute("form", form);
         model.addAttribute("customer", customer);
         return "profile";
     }
@@ -78,6 +111,36 @@ public class LibraryController {
     public String logout(HttpSession session) {
         session.invalidate(); // This clears all session attributes
         return "login"; // Redirect to login page
+    }
+
+    @PostMapping("/profile/update")
+    public String updateProfile(@Valid @ModelAttribute("form") userForm form,
+                                BindingResult bindingResult,
+                                HttpSession session,
+                                Model model){
+        Customer sessionCustomer = (Customer) session.getAttribute("loggedInCustomer");
+
+        if(sessionCustomer == null) return "login";
+
+        if(bindingResult.hasErrors()) return "profile";
+
+        if (!form.getPassword().equals(form.getConfirm())) {
+            model.addAttribute("passwordError", "Passwords do not match.");
+            bindingResult.rejectValue("confirm", "userForm Error -> Confirm Password", "Passwords do not match");
+            return "profile";
+        }
+
+        Customer customer = customerRepository.findByUsername(sessionCustomer.getUsername());
+
+        customer.setUsername(form.getName());
+        customer.setEmail(form.getEmail());
+        customer.setPassword(form.getPassword());
+
+        //update
+        customerRepository.save(customer);
+        session.setAttribute("loggedInCustomer", customer);
+
+        return "redirect:/profile";
     }
 
 
@@ -93,7 +156,7 @@ public class LibraryController {
 
 
         customer = customerRepository.findByUsername(customer.getUsername());
-        System.out.println("HELLO"+customer.getBasket().size()); //forces basket to load
+        System.out.println("HELLO "+customer.getBasket().size()); //forces basket to load
 
 
         model.addAttribute("customer", customer);
