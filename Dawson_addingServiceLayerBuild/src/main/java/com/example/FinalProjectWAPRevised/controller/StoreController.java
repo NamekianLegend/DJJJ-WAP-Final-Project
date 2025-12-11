@@ -94,6 +94,7 @@ public class StoreController {
         userForm form = new userForm();
         form.setName(customer.getUsername());
         form.setEmail(customer.getEmail());
+        form.setPassword((String)session.getAttribute("password"));
         model.addAttribute("userForm", form);
 
         model.addAttribute("customer", customer);
@@ -109,19 +110,25 @@ public class StoreController {
     @PostMapping("/profile/update")
     public String updateProfile(@Valid @ModelAttribute("userForm") userForm userForm,
                                 BindingResult bindingResult,
-                                HttpSession session){
-        if (bindingResult.hasErrors()) {
+                                HttpSession session,
+                                Model model){
+
+
+        if (!userForm.getPassword().equals(userForm.getConfirm())) {
+            System.out.println("Password do not match");
+            model.addAttribute("passwordError", "Passwords do not match.");
+            bindingResult.rejectValue("confirm", "userForm Error -> Confirm Password", "Passwords do not match");
+            return "redirect:/profile";
+        }
+
+        if(bindingResult.hasErrors()){
             System.out.println("Validation Blocked the Update: " + bindingResult.getAllErrors());
-            return "profile"; // dont use redirect here, this way the form data will stay on the page
+            return "redirect:/profile";
         }
 
         Customer customer = (Customer) session.getAttribute("loggedInCustomer");
-
-        customerService.updateCustomer(customer.getId(), userForm.getName(), userForm.getEmail(), userForm.getPassword());
-
-        // update the session so the html page displays the updated profile info
-        Customer updatedCustomer = customerService.getById(customer.getId());
-        session.setAttribute("loggedInCustomer", updatedCustomer);
+        
+        session = customerService.updateCustomer(userForm, customer.getId(), session);
 
         return "redirect:/profile";
     }
@@ -163,7 +170,7 @@ public class StoreController {
         Customer customer = customerService.addItemToBasket(sessionCustomer.getId(), itemId);
 
         session.setAttribute("loggedInCustomer", customer);
-        return "redirect:/basket";
+        return "redirect:/store";
     }
 
 
@@ -215,6 +222,7 @@ public String showOrderSuccess(HttpSession session, Model model){
         Customer customer = customerService.authenticate(username, password);
 
         if (customer!=null){
+            session.setAttribute("password", password);
             session.setAttribute("loggedInCustomer", customer);
             model.addAttribute("username", customer.getUsername());
 

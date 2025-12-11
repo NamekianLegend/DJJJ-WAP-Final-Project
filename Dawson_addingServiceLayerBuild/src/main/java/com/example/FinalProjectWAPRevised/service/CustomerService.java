@@ -8,6 +8,9 @@ import com.example.FinalProjectWAPRevised.model.Item;
 import com.example.FinalProjectWAPRevised.model.userForm;
 import com.example.FinalProjectWAPRevised.repository.CustomerRepository;
 import com.example.FinalProjectWAPRevised.repository.ItemRepository;
+
+import jakarta.servlet.http.HttpSession;
+
 import com.example.FinalProjectWAPRevised.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.logging.Handler;
 
 
 @Service
@@ -54,20 +58,36 @@ public class CustomerService {
     }
 
     @Transactional
-    public void updateCustomer(Long customerId, String username, String email, String password){
-        Customer customer = customerRepository.findById(customerId).orElseThrow(
+    public HttpSession updateCustomer(userForm form, Long id, HttpSession session){
+        Customer updatedCustomer = customerRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Customer not found"));
 
-        customer.setUsername(username);
-        customer.setEmail(email);
+        Customer c1 = (Customer)session.getAttribute("loggedInCustomer");
+        System.out.println("(Before) Session Password hashed: "+c1.getPassword());
+        System.out.println("(Before) Repo Password hashed: "+updatedCustomer.getPassword());
+        System.out.println("(Before) Password: "+(String)session.getAttribute("password"));
 
-        // check if its null and if its empty so the old password doesn't get overwritten with a blank password string
-        if(password != null && !password.isEmpty()){
-            String encodedPassword = passwordEncoder.encode(password);
-            customer.setPassword(encodedPassword);
-        }
 
-        customerRepository.save(customer);
+        String hashedPassword = passwordEncoder.encode(form.getPassword());
+        updatedCustomer.setPassword(hashedPassword);
+        updatedCustomer.setEmail(form.getEmail());
+        updatedCustomer.setUsername(form.getName());
+
+
+
+
+        
+        customerRepository.save(updatedCustomer);
+        session.setAttribute("password", form.getPassword());
+        session.setAttribute("loggedInCustomer", updatedCustomer);
+
+        c1 = (Customer)session.getAttribute("loggedInCustomer");
+
+        System.out.println("(After) Session Password hashed: "+c1.getPassword());
+        System.out.println("(After) Repo Password hashed: "+updatedCustomer.getPassword());
+        System.out.println("(After) Password: "+(String)session.getAttribute("password"));
+
+        return session;
     }
 
     // get by id
