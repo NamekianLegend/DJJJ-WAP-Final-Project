@@ -11,7 +11,7 @@
         <h1>Create Account</h1>
         <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
             <div class="form-group">
-                <label for="name">Full Name</label>
+                <label for="name">Username</label>
                 <input type="text" th:field="*{name}" />
                 <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-bubble">Name Error</span>
             </div>

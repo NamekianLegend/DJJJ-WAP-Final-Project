@@ -1,5 +1,7 @@
 package com.example.FinalProjectWAPRevised.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,12 +14,15 @@ import com.example.FinalProjectWAPRevised.model.Customer;
 import com.example.FinalProjectWAPRevised.model.userForm;
 import com.example.FinalProjectWAPRevised.service.CustomerService;
 import com.example.FinalProjectWAPRevised.service.ItemService;
+import com.example.FinalProjectWAPRevised.config.SecurityConfig;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
 public class StoreController {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final ItemService itemService;
     private final CustomerService customerService;
@@ -85,6 +90,12 @@ public class StoreController {
             return "login";
         }
 
+        // create a new form object to take in any input from the update profile
+        userForm form = new userForm();
+        form.setName(customer.getUsername());
+        form.setEmail(customer.getEmail());
+        model.addAttribute("userForm", form);
+
         model.addAttribute("customer", customer);
         return "profile";
     }
@@ -94,6 +105,27 @@ public class StoreController {
         session.invalidate(); // This clears all session attributes
         return "login"; // Redirect to login page
     }
+
+    @PostMapping("/profile/update")
+    public String updateProfile(@Valid @ModelAttribute("userForm") userForm userForm,
+                                BindingResult bindingResult,
+                                HttpSession session){
+        if (bindingResult.hasErrors()) {
+            System.out.println("Validation Blocked the Update: " + bindingResult.getAllErrors());
+            return "profile"; // dont use redirect here, this way the form data will stay on the page
+        }
+
+        Customer customer = (Customer) session.getAttribute("loggedInCustomer");
+
+        customerService.updateCustomer(customer.getId(), userForm.getName(), userForm.getEmail(), userForm.getPassword());
+
+        // update the session so the html page displays the updated profile info
+        Customer updatedCustomer = customerService.getById(customer.getId());
+        session.setAttribute("loggedInCustomer", updatedCustomer);
+
+        return "redirect:/profile";
+    }
+
 
 
     //-----------------------------BASKET-----------------------------

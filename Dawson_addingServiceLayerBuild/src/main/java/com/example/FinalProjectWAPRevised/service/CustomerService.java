@@ -8,12 +8,19 @@ import com.example.FinalProjectWAPRevised.model.Item;
 import com.example.FinalProjectWAPRevised.model.userForm;
 import com.example.FinalProjectWAPRevised.repository.CustomerRepository;
 import com.example.FinalProjectWAPRevised.repository.ItemRepository;
+import com.example.FinalProjectWAPRevised.config.SecurityConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 
 @Service
 public class CustomerService {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final CustomerRepository customerRepository;
     private final ItemRepository itemRepository;
@@ -28,18 +35,45 @@ public class CustomerService {
 
     // authenticate login
     public Customer authenticate(String username, String password){
-        // Find user by name and password from repository
-        return customerRepository.findAll().stream()
-                .filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password))
-                .findFirst()
-                .orElse(null); //if user doesn't exist return null
+        List<Customer> customers = customerRepository.findAll();
+        for(Customer customer: customers){
+            if(customer.getUsername().equals(username) && passwordEncoder.matches(password, customer.getPassword())){
+                return customer;
+            }
+        }
+
+        return null;
     }
 
     // register new user
     @Transactional
     public void registerCustomer(userForm form) {
-        Customer newCustomer = new Customer(form.getName(), form.getEmail(), form.getPassword());
+        String hashedPassword = passwordEncoder.encode(form.getPassword());
+        Customer newCustomer = new Customer(form.getName(), form.getEmail(), hashedPassword);
         customerRepository.save(newCustomer);
+    }
+
+    @Transactional
+    public void updateCustomer(Long customerId, String username, String email, String password){
+        Customer customer = customerRepository.findById(customerId).orElseThrow(
+                () -> new RuntimeException("Customer not found"));
+
+        customer.setUsername(username);
+        customer.setEmail(email);
+
+        // check if its null and if its empty so the old password doesn't get overwritten with a blank password string
+        if(password != null && !password.isEmpty()){
+            String encodedPassword = passwordEncoder.encode(password);
+            customer.setPassword(encodedPassword);
+        }
+
+        customerRepository.save(customer);
+    }
+
+    // get by id
+    public Customer getById(Long customerId){
+        return customerRepository.findById(customerId).orElseThrow(
+                () -> new RuntimeException("Customer not found"));
     }
 
 
@@ -50,8 +84,10 @@ public class CustomerService {
     @Transactional
     public Customer addItemToBasket(Long customerId, Long itemId){
         // initialize the customer by id, and the item by id
-        Customer customer = customerRepository.findById(customerId).orElseThrow();
-        Item item = itemRepository.findById(itemId).orElseThrow();
+        Customer customer = customerRepository.findById(customerId).orElseThrow(
+                () -> new RuntimeException("Customer not found"));
+        Item item = itemRepository.findById(itemId).orElseThrow(
+                () -> new RuntimeException("Item not found"));
 
         // if customer's basket doesnt contain the item, add the item to the customer's basket and save it to the db
         if (!customer.getBasket().contains(item)) {
