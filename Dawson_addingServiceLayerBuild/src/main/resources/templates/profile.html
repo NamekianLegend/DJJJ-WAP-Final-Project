@@ -16,10 +16,10 @@
 
     <div class="profile-container">
         <h1>Your Profile</h1>
-        <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+        <form th:action="@{/profile/update}" th:object="${userForm}" method="post" novalidate>
             <div class="form-group">
                 <label for="name">Username</label>
-                <input type="text" th:field="*{name}" />
+                <input type="text" it="name" th:field="*{name}" />
                 <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-bubble">Name Error</span>
             </div>
             <div class="form-group">
@@ -29,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" th:field="*{password}" required>
+                <input type="text" id="password" name="password" th:field="*{password}" required>
                 <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-bubble">Password Error</span>
             </div>
             <div class="form-group">
